@@ -1,37 +1,15 @@
 import React from "react";
 import './App.css';
-import { toRomaji } from 'wanakana';
 
-const PokemonRow = ({pokemon, onSelect}) => (
-  <tr>
-    <td>{pokemon.name.japanese}</td>
-    <td>{pokemon.name.english}</td>
-    <td>{pokemon.type.join(", ")}</td>
-    <td><button onClick={() => onSelect(pokemon)}>Select!</button></td>
-  </tr>
-)
-
-const PokemonInfo = ({name, base}) => (
-  <div>
-    <h1>{name.japanese}</h1>
-    <h2>{name.english}</h2>
-    <table>
-      {
-        Object.keys(base).map(key =>
-          (<tr key={key}>
-            <td>{key}</td>
-            <td>{base[key]}</td>
-          </tr>)
-        )
-      }
-    </table>
-  </div>
-)
+import PokemonContext from "./PokemonContext";
+import PokemonInfo from "./components/PokemonInfo";
+import PokemonFilter from "./components/PokemonFilter";
+import PokemonTable from "./components/PokemonTable";
 
 function App() {
 
   const [filter, filterSet] = React.useState("");
-  const [selectedItem, selectedItemSet] = React.useState(null);
+  const [selectedPokemon, selectedPokemonSet] = React.useState(null);
   const [pokemon, pokemonSet] = React.useState([]);
 
   React.useEffect(() => {
@@ -41,62 +19,23 @@ function App() {
   }, []);
   
   return (
-    <div style={{
-      margin: "auto",
-      width: 800,
-      paddingTop: "1rem",
-    }}>
-      <h1 className="title">Pokemon Search</h1>
-      <div
-        style = {{
-          display: "grid",
-          gridTemplateColumns: "70% 30%",
-          gridColumnGap: "1rem"
-        }}
-      >
-        <div>
-          <input
-            value={filter}
-            onChange={(e) => filterSet(e.target.value)}
-          />
-          <table width="100%">
-            <thead>
-              <tr>
-                <th>Japanese</th>
-                <th>English</th>
-                <th>Type</th>
-              </tr>
-            </thead>
-            <tbody>
-              {
-                filter.match(/\w/ig) ? 
-                pokemon.filter((pokemon) =>
-                pokemon.name.english.toLowerCase()
-                .includes(filter.toLowerCase()))
-                .slice(0, 200)
-                .map(pokemon => (
-                  <PokemonRow pokemon={pokemon} key={pokemon.id}
-                    onSelect={(pokemon) => selectedItemSet(pokemon)} />
-                )) :
-                pokemon.filter((pokemon) =>
-                toRomaji(pokemon.name.japanese)
-                .includes(toRomaji(filter)))
-                .slice(0, 200)
-                .map(pokemon => (
-                  <PokemonRow pokemon={pokemon} key={pokemon.id}
-                    onSelect={(pokemon) => selectedItemSet(pokemon)} />
-                ))
-              }
-            </tbody>
-          </table>
-        </div>
-        <div>
-          {selectedItem && (
-            <PokemonInfo {... selectedItem} />
-          )}
+    <PokemonContext.Provider
+      value={{filter, pokemon, selectedPokemon,
+      filterSet, pokemonSet, selectedPokemonSet}}
+    >
+      <div className="page-container">
+        <h1 className="title">Pokemon Search</h1>
+        <div className="grid-container">
+          <div>
+            <PokemonFilter />
+            <PokemonTable />
+          </div>
+          <div>
+            <PokemonInfo />
+          </div>
         </div>
       </div>
-    </div>
+    </PokemonContext.Provider>
   );
 }
 
