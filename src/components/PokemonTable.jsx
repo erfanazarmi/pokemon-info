@@ -1,16 +1,10 @@
 import React from "react";
-import useStore from "../store";
-import { toRomaji } from 'wanakana';
+import store from "../store";
+import { observer } from "mobx-react";
 
 import PokemonRow from "./PokemonRow";
 
-
 const PokemonTable = () => {
-  
-  const pokemon = useStore(state => state.pokemon);
-  const filter = useStore(state => state.filter);
-  const setSelectedPokemon = useStore(state => state.setSelectedPokemon);
-
   return (
     <table width="100%">
       <thead>
@@ -20,28 +14,30 @@ const PokemonTable = () => {
           <th>Type</th>
         </tr>
       </thead>
-      <tbody> {
-        filter.match(/\w/ig) ?
-          pokemon.filter((pokemon) =>
-            pokemon.name.english.toLowerCase()
-            .includes(filter.toLowerCase()))
-            .slice(0, 200)
-            .map(pokemon => (
-              <PokemonRow pokemon={pokemon} key={pokemon.id}
-              onSelect={(pokemon) => setSelectedPokemon(pokemon)} />
-            )) :
-          pokemon.filter((pokemon) =>
-            toRomaji(pokemon.name.japanese)
-            .includes(toRomaji(filter)))
-            .slice(0, 200)
-            .map(pokemon => (
-              <PokemonRow pokemon={pokemon} key={pokemon.id}
-              onSelect={(pokemon) => setSelectedPokemon(pokemon)} />
-            ))
+      <tbody>
+        {store.filter.match(/\w/gi)
+          ? store.filteredPokemonEN
+              .slice(0, 200)
+              .map((pokemon) => (
+                <PokemonRow
+                  pokemon={pokemon}
+                  key={pokemon.id}
+                  onSelect={(pokemon) => store.setSelectedPokemon(pokemon)}
+                />
+              ))
+          : store.filteredPokemonJP
+              .slice(0, 200)
+              .map((pokemon) => (
+                <PokemonRow
+                  pokemon={pokemon}
+                  key={pokemon.id}
+                  onSelect={(pokemon) => store.setSelectedPokemon(pokemon)}
+                />
+              ))
         }
       </tbody>
     </table>
-  )
-}
+  );
+};
 
-export default PokemonTable;
+export default observer(PokemonTable);

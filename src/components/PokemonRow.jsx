@@ -1,7 +1,7 @@
 import React from "react";
 
 const PokemonRow = ({pokemon, onSelect}) => (
-  <tr keys={pokemon.id}>
+  <tr>
     <td>{pokemon.name.japanese}</td>
     <td>{pokemon.name.english}</td>
     <td>{pokemon.type.join(", ")}</td>
