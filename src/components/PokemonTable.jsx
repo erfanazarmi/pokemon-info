@@ -1,12 +1,15 @@
 import React from "react";
+import useStore from "../store";
 import { toRomaji } from 'wanakana';
+
 import PokemonRow from "./PokemonRow";
-import { useSelector, useDispatch } from "react-redux";
+
 
 const PokemonTable = () => {
-  const dispatch = useDispatch();
-  const pokemon = useSelector(state => state.pokemon);
-  const filter = useSelector(state => state.filter);
+  
+  const pokemon = useStore(state => state.pokemon);
+  const filter = useStore(state => state.filter);
+  const setSelectedPokemon = useStore(state => state.setSelectedPokemon);
 
   return (
     <table width="100%">
@@ -25,7 +28,7 @@ const PokemonTable = () => {
             .slice(0, 200)
             .map(pokemon => (
               <PokemonRow pokemon={pokemon} key={pokemon.id}
-              onSelect={(pokemon) => dispatch({type: "SET_SELECTEDPOKEMON", payload: pokemon})} />
+              onSelect={(pokemon) => setSelectedPokemon(pokemon)} />
             )) :
           pokemon.filter((pokemon) =>
             toRomaji(pokemon.name.japanese)
@@ -33,7 +36,7 @@ const PokemonTable = () => {
             .slice(0, 200)
             .map(pokemon => (
               <PokemonRow pokemon={pokemon} key={pokemon.id}
-              onSelect={(pokemon) => dispatch({type: "SET_SELECTEDPOKEMON", payload: pokemon})} />
+              onSelect={(pokemon) => setSelectedPokemon(pokemon)} />
             ))
         }
       </tbody>
